@@ -308,6 +308,8 @@ page = st.sidebar.selectbox("Choose: ", options=["About", "Analysis & Dashboard"
 
 if page=='About':
     st.header("About")
+    st.write("This is an end to end Data Analysis and Machine Learning Project that I have built for practice.")
+    st.write("Thank You")
 
 elif page == 'Analysis & Dashboard':
 
