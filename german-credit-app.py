@@ -7,6 +7,14 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_selection import chi2, f_classif, mutual_info_classif
 from scipy.stats import pointbiserialr
+import pickle
+from sklearn.svm import SVC
+
+with open('pipeline.pkl', 'rb') as f:
+    pipeline = pickle.load(f)
+
+with open('label_encoder.pkl', 'rb') as f:
+    le = pickle.load(f)
 
 def show_summary(df):
     # Extract summary information manually
@@ -263,74 +271,114 @@ def show_feat_impt(df, columns, method):
             a = a.set_title("Feature Importance")
             st.pyplot(fig)
 
-     
+def classify():
+    dur = st.number_input("Enter The duration of the credit in months: ")
+    credit_amount = st.number_input("Specify the amount of credit or loan requested by the individual")
+    age = st.number_input("Enter the age of the individual in years")
+    chk_stat = st.selectbox("Status of the existing checking account",options=['0<=X<200', '<0', '>=200', 'no checking'])
+    credit_hist = st.selectbox("Credit history of the individual",options=['all paid', 'critical/other existing credit', 'delayed previously', 'existing paid', 'no credits'])
+    purpose = st.selectbox("Purpose of the credit or loan",options=['business', 'domestic appliance', 'education', 'furniture/equipment', 'new car', 'other', 'radio/tv', 'repairs', 'retraining', 'used car'])
+    property_magnitude = st.selectbox("Value or type of property owned by the individual",options=['car', 'life insurance', 'no known property', 'real estate'])
+    gender = st.selectbox("Gender",options=['female', 'male','other'])
+    marital_status = st.selectbox("Marital Status", options=['divorced/dependent/married', 'divorced/separated', 'married/widowed', 'single'])
+    savings_status = st.selectbox("The status of the individual's savings account", options=['100<=X<500', '500<=X<1000', '<100', '>=1000', 'no known savings'])
+    
+    input_data = pd.DataFrame({
+        'duration': [dur],
+        'credit_amount': [credit_amount],
+        'age': [age],
+        'checking_status': [chk_stat],
+        'credit_history': [credit_hist],
+        'purpose': [purpose],
+        'property_magnitude':[property_magnitude],
+        'gender': [gender],
+        'marital_status': [marital_status],
+        'savings_status' : [savings_status]
+    })
+    credit_class = le.inverse_transform(pipeline.predict(input_data))
+    if credit_class == 'bad':
+        st.error("Bad Credit")
+    else:
+        st.success("Good Credit")
+
 
 st.title("German Credit Risk Analysis and Modeling")
 
-st.header("Data",divider=True)
+page = st.sidebar.selectbox("Choose: ", options=["About", "Analysis & Dashboard", "Classification Model"])
 
-df = pd.read_csv("Credit-Data-Raw.csv")
-st.dataframe(df, use_container_width=True)
+if page=='About':
+    st.header("About")
 
-numerical_columns = df.select_dtypes(include=['int64', 'float64']).columns
-categorical_columns = [x for x in df.columns if x not in numerical_columns]
+elif page == 'Analysis & Dashboard':
 
-st.sidebar.header("Choose Tasks")
-summary = st.sidebar.checkbox("Show Summary")
-unique_values = st.sidebar.checkbox("Unique Values")
-outlier_detection = st.sidebar.checkbox("Outlier Detection")
-EDA = st.sidebar.checkbox("EDA")
-feat_impt = st.sidebar.checkbox("Measure Feature Importance")
+    st.header("Data",divider=True)
 
-if summary:
-    show_summary(df)
+    df = pd.read_csv("Credit-Data-Raw.csv")
+    st.dataframe(df, use_container_width=True)
 
-if unique_values:
-    st.header("Unique Values:",divider=True)
-    col_list_for_unique_vals = st.multiselect("Select Columns for Displaying Unique Values", options=df.columns)
-    if col_list_for_unique_vals:
-        show_unique_values(df,col_list_for_unique_vals)
-    else:
-        st.write("Please select at least one column to display its details.")
+    numerical_columns = df.select_dtypes(include=['int64', 'float64']).columns
+    categorical_columns = [x for x in df.columns if x not in numerical_columns]
 
-if outlier_detection:
-    st.header("Outlier Detection:",divider=True)
-    
-    numerical_columns_stats = st.checkbox("Show Statistics of Numerical Attributes by target class for Outlier Detection")
-    if numerical_columns_stats:
-        show_outlier_detection(df,[],0)
-    
-    numerical_columns_viz = st.checkbox("Visualize Numerical Attributes for Outlier Detection")
-    if numerical_columns_viz:
-        col_list_for_otl_detection = st.multiselect("Select Attributes for visualization", options=numerical_columns)
-        if col_list_for_otl_detection:
-            show_outlier_detection(df,col_list_for_otl_detection,1)
+    st.sidebar.header("Choose Tasks")
+    summary = st.sidebar.checkbox("Show Summary")
+    unique_values = st.sidebar.checkbox("Unique Values")
+    outlier_detection = st.sidebar.checkbox("Outlier Detection")
+    EDA = st.sidebar.checkbox("EDA")
+    feat_impt = st.sidebar.checkbox("Measure Feature Importance")
+
+    if summary:
+        show_summary(df)
+
+    if unique_values:
+        st.header("Unique Values:",divider=True)
+        col_list_for_unique_vals = st.multiselect("Select Columns for Displaying Unique Values", options=df.columns)
+        if col_list_for_unique_vals:
+            show_unique_values(df,col_list_for_unique_vals)
         else:
-            st.write("Please select at least one column to visualize.")
-    
+            st.write("Please select at least one column to display its details.")
 
-if EDA:
-    st.header("Exploratory Data Analysis:", divider=True)
-    univar_analysis = st.checkbox("Show Univariate Analysis")
-    if univar_analysis:
-        show_EDA(df,categorical_columns,0)
-    
-    bivar_analysis = st.checkbox("Show Bivariate Analysis")
-    if bivar_analysis:
-        show_EDA(df,df.columns,1)
+    if outlier_detection:
+        st.header("Outlier Detection:",divider=True)
+        
+        numerical_columns_stats = st.checkbox("Show Statistics of Numerical Attributes by target class for Outlier Detection")
+        if numerical_columns_stats:
+            show_outlier_detection(df,[],0)
+        
+        numerical_columns_viz = st.checkbox("Visualize Numerical Attributes for Outlier Detection")
+        if numerical_columns_viz:
+            col_list_for_otl_detection = st.multiselect("Select Attributes for visualization", options=numerical_columns)
+            if col_list_for_otl_detection:
+                show_outlier_detection(df,col_list_for_otl_detection,1)
+            else:
+                st.write("Please select at least one column to visualize.")
         
 
-    mulvar_analysis = st.checkbox("Show Multivariate Analysis")
-    if mulvar_analysis:
-        show_EDA(df,numerical_columns,2)
+    if EDA:
+        st.header("Exploratory Data Analysis:", divider=True)
+        univar_analysis = st.checkbox("Show Univariate Analysis")
+        if univar_analysis:
+            show_EDA(df,categorical_columns,0)
+        
+        bivar_analysis = st.checkbox("Show Bivariate Analysis")
+        if bivar_analysis:
+            show_EDA(df,df.columns,1)
+            
 
-if feat_impt:
-    st.header("Feature Importance", divider=True)
-    num_feat_impt = st.checkbox("Measure Feature Importance of Numerical Attributes")
-    if num_feat_impt:
-        show_feat_impt(df,numerical_columns,0)
-    cat_feat_impt = st.checkbox("Measure Feature Importance of Categorical Attributes")
-    if cat_feat_impt:
-        show_feat_impt(df,categorical_columns,1)
+        mulvar_analysis = st.checkbox("Show Multivariate Analysis")
+        if mulvar_analysis:
+            show_EDA(df,numerical_columns,2)
+
+    if feat_impt:
+        st.header("Feature Importance", divider=True)
+        num_feat_impt = st.checkbox("Measure Feature Importance of Numerical Attributes")
+        if num_feat_impt:
+            show_feat_impt(df,numerical_columns,0)
+        cat_feat_impt = st.checkbox("Measure Feature Importance of Categorical Attributes")
+        if cat_feat_impt:
+            show_feat_impt(df,categorical_columns,1)
+
+else:
+    st.header("Classification Model")
+    classify()
 
 
