@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import pickle
 
-df = pd.read_csv('Credit-Data-Cleaned.csv')
+df = pd.read_csv(r'data\Credit-Data-Cleaned.csv')
 y = df['class']
 x = df.drop(['class','housing','employment'],axis=1)
 numerical_columns = x.select_dtypes(include=['int64', 'float64']).columns
@@ -39,8 +39,8 @@ decoded_pred = label_encoder.inverse_transform(y_pred)
 
 print("Accuracy Score:",accuracy_score(y_test,y_pred))
 
-with open('pipeline.pkl', 'wb') as f:
+with open(r'resources\pipeline.pkl', 'wb') as f:
     pickle.dump(pipeline, f)
 
-with open('label_encoder.pkl', 'wb') as f:
+with open(r'resources\label_encoder.pkl', 'wb') as f:
     pickle.dump(label_encoder, f)

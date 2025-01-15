@@ -9,11 +9,18 @@ from sklearn.feature_selection import chi2, f_classif, mutual_info_classif
 from scipy.stats import pointbiserialr
 import pickle
 from sklearn.svm import SVC
+from pathlib import Path
 
-with open('pipeline.pkl', 'rb') as f:
+
+def read_markdown_file(markdown_file):
+    return Path(markdown_file).read_text()
+
+project_documentation = read_markdown_file("README.md")
+
+with open(r'resources\pipeline.pkl', 'rb') as f:
     pipeline = pickle.load(f)
 
-with open('label_encoder.pkl', 'rb') as f:
+with open(r'resources\label_encoder.pkl', 'rb') as f:
     le = pickle.load(f)
 
 def show_summary(df):
@@ -132,13 +139,11 @@ def show_EDA(df, columns, method):
         column = st.selectbox("Choose variable for Univariate Analysis:", options = categorical_columns)
         if column:
             fig, axes = plt.subplots(1,2,figsize=(15,4))
-            # Box Plot
             sns.countplot(x=column, data=df, ax=axes[0])
-            axes[0].set_title(f'Box plot of {column}')
+            axes[0].set_title(f'Distribution by {column}')
 
-            # Histogram
             df[column].value_counts().plot.pie(autopct='%1.1f%%', ax=axes[1])
-            axes[1].set_title(f'Histogram of {column}')
+            axes[1].set_title(f'% Proportion by {column}')
 
             st.pyplot(fig)
 
@@ -302,20 +307,19 @@ def classify():
         st.success("Good Credit")
 
 
-st.title("German Credit Risk Analysis and Modeling")
+
 
 page = st.sidebar.selectbox("Choose: ", options=["About", "Analysis & Dashboard", "Classification Model"])
 
 if page=='About':
-    st.header("About")
-    st.write("This is an end-to-end Data Analysis and Machine Learning Project that I have built for practice.")
+    st.markdown(project_documentation, unsafe_allow_html=True)
     st.write("Thank You")
 
 elif page == 'Analysis & Dashboard':
-
+    st.title("German Credit Risk Analysis and Predictive Modeling")
     st.header("Data",divider=True)
 
-    df = pd.read_csv("Credit-Data-Raw.csv")
+    df = pd.read_csv(r"data\Credit-Data-Raw.csv")
     st.dataframe(df, use_container_width=True)
 
     numerical_columns = df.select_dtypes(include=['int64', 'float64']).columns
@@ -382,5 +386,3 @@ elif page == 'Analysis & Dashboard':
 else:
     st.header("Classification Model")
     classify()
-
-
