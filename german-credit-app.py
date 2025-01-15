@@ -17,10 +17,10 @@ def read_markdown_file(markdown_file):
 
 project_documentation = read_markdown_file("README.md")
 
-with open(r'resources\pipeline.pkl', 'rb') as f:
+with open(r'resources/pipeline.pkl', 'rb') as f:
     pipeline = pickle.load(f)
 
-with open(r'resources\label_encoder.pkl', 'rb') as f:
+with open(r'resources/label_encoder.pkl', 'rb') as f:
     le = pickle.load(f)
 
 def show_summary(df):
@@ -319,7 +319,7 @@ elif page == 'Analysis & Dashboard':
     st.title("German Credit Risk Analysis and Predictive Modeling")
     st.header("Data",divider=True)
 
-    df = pd.read_csv(r"data\Credit-Data-Raw.csv")
+    df = pd.read_csv(r"data/Credit-Data-Raw.csv")
     st.dataframe(df, use_container_width=True)
 
     numerical_columns = df.select_dtypes(include=['int64', 'float64']).columns
