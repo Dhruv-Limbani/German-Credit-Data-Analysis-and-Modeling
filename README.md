@@ -56,12 +56,17 @@ This notebook includes:
     - **Final Conclusion**:
         - Models without oversampling the minority class (using SMOTE) and employing stratification during train-test splits yielded higher accuracy compared to other methods.
     - **Ranking of Methods Based on Test Accuracy and Corresponding Models**:
-        1. **HPT with only other techniques-based important attributes without SMOTE** - SVM (C=1, kernel='rbf') - 78%.
-        2. **HPT with all combined attributes (EDA + other techniques) without SMOTE** - SVM (C=1, kernel='rbf') - 77.6%.
-        3. **HPT with only EDA-based important attributes without SMOTE** - Logistic Regression (C=0.1) - 77%.
-        4. **HPT with only EDA-based important attributes and SMOTE** - Gradient Boosting - 74.3%.
-        5. **HPT with only other techniques-based important attributes and SMOTE** - Random Forest - 74.3%.
-        6. **HPT with all combined attributes (EDA + other techniques) and SMOTE** - Logistic Regression (C=0.1) - 73.3%.
+        1) HPT with only onther techniques based important attributes without SMOTE - SVM (c=1, kernel='rbf') - (Accuracy-78%, Precision-77.36%)
+
+        2) HPT with all the combined attributes (from EDA + other techniques) without SMOTE - SVM (c=1, kernel='rbf') - (Accuracy-77.6%, Precision-76.98%)
+
+        3) HPT with only EDA based important attributes without SMOTE - Logistic Regression (c=0.1) - (Accuracy-77%, Precision-75.81%)
+
+        4) HPT with only EDA based important attributes and SMOTE - Gradient Boosting - (Accuracy-74.3%, Precision-73.8%)
+
+        5) HPT with only onther techniques based important attributes and SMOTE - Random Forest - (Accuracy-74.3%, Precision-73.17%)
+
+        6) HPT with all the combined attributes (from EDA + other techniques) and SMOTE - Logistic Regression (c=0.1) - (Accuracy-73.3%, Precision-76.52%)
 
 #### 3. Model Testing on Raw Dataset.ipynb
 - Tests models on the raw dataset to assess their generalizability.
