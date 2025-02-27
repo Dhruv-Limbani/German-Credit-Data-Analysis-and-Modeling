@@ -5,6 +5,8 @@ This project involves analyzing and building predictive models on the German Cre
 
 Link to Website: [German Credit Risk Analysis and Modeling](https://german-credit-analysis-and-modelling-by-dhruv-limbani.streamlit.app/)
 
+Conclusion: Achieved 78% accuracy and 77.36% precision using Support Vector Machine (c=1, kernel='rbf')
+
 ### Notebooks Summary
 
 #### 1. German Credit Data Analysis and Predictive Modeling.ipynb
